@@ -1,18 +1,16 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the necessary extensibility types to use in your code below
+
+// https://code.visualstudio.com/docs/extensionAPI/vscode-api
+
 import {window, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument} from 'vscode';
 
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
 export function activate(context: ExtensionContext) {
 
-   // Use the console to output diagnostic information (console.log) and errors (console.error).
-// This line of code will only be executed once when your extension is activated.
-console.log('Congratulations, your extension "WordCount" is now active!');
-
     // create a new word counter
     let wordCounter = new WordCounter();
     let controller = new WordCounterController(wordCounter);
+    
 
     // Add to a list of disposables which are disposed when this extension is deactivated.
     context.subscriptions.push(controller);
@@ -38,13 +36,14 @@ class WordCounter {
         }
 
         let doc = editor.document;
+        let currentLine = editor.selections[0].active.line;
 
-        // Only update status if an Markdown file
-        if (doc.languageId === "markdown") {
-            let wordCount = this._getWordCount(doc);
+        // Only update status if an Sass file
+        if (doc.languageId === "scss") {
+            let wordCount = this._getNestedRules(doc, currentLine);
 
             // Update the status bar
-            this._statusBarItem.text = wordCount !== 1 ? `${wordCount} Words` : '1 Word';
+            this._statusBarItem.text = wordCount !== 1 ? `${currentLine + 1} line` : '1 line';
             this._statusBarItem.color = "#fff";
             this._statusBarItem.command = "";
             this._statusBarItem.show();
@@ -53,16 +52,24 @@ class WordCounter {
         }
     }
 
-    public _getWordCount(doc: TextDocument): number {
+    public _getNestedRules(doc: TextDocument, currentLine): number {
 
         let docContent = doc.getText();
 
+        console.log(currentLine);
+        console.log(doc.lineAt(currentLine).text);
+
+        // ([^\n\t,]+)(,|{)
+        // ([a-zA-Z].*)((,)|({))
+        // (\S.*)((,)|({))
+
         // Parse out unwanted whitespace so the split is accurate
-        docContent = docContent.replace(/(< ([^>]+)<)/g, '').replace(/\s+/g, ' ');
-        docContent = docContent.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        var ciccio = docContent.match(/(\S.*)((,)|({))/g);
+        // console.log(ciccio);
+
         let wordCount = 0;
         if (docContent != "") {
-            wordCount = docContent.split(" ").length;
+            wordCount = docContent.length;
         }
 
         return wordCount;
