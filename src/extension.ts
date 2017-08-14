@@ -1,7 +1,7 @@
 
 // https://code.visualstudio.com/docs/extensionAPI/vscode-api
 
-import {window, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument} from 'vscode';
+import {window, commands, Range, Position,Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument} from 'vscode';
 
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
@@ -23,12 +23,10 @@ class WordCounter {
 
     public updateWordCount() {
 
-        // Create as needed
         if (!this._statusBarItem) {
             this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
         }
 
-        // Get the current text editor
         let editor = window.activeTextEditor;
         if (!editor) {
             this._statusBarItem.hide();
@@ -43,8 +41,8 @@ class WordCounter {
             let wordCount = this._getNestedRules(doc, currentLine);
 
             // Update the status bar
-            this._statusBarItem.text = wordCount !== 1 ? `${currentLine + 1} line` : '1 line';
-            this._statusBarItem.color = "#fff";
+            this._statusBarItem.text = `${wordCount}`;
+            // this._statusBarItem.color = "#fff";
             this._statusBarItem.command = "";
             this._statusBarItem.show();
         } else { 
@@ -52,30 +50,35 @@ class WordCounter {
         }
     }
 
-    public _getNestedRules(doc: TextDocument, currentLine): number {
+    
 
-        let docContent = doc.getText();
+    public _getNestedRules(doc: TextDocument, currentLine): string {
 
-        console.log(currentLine);
-        console.log(doc.lineAt(currentLine).text);
+        let startPos = new Position(0, 0);
+        let endPos = new Position(currentLine, 0);
+        let docContent = doc.getText(new Range(startPos,endPos));
 
-        // ([^\n\t,]+)(,|{)
-        // ([a-zA-Z].*)((,)|({))
-        // (\S.*)((,)|({))
+        let _removeSpaces = docContent.replace(/\s{2,}|\s(?={)|\n/g, "");
+        let _removeProp = _removeSpaces.replace(/\w+-|\w+:{1}\s?\w+;/g, "");
+        let _filterCache = _removeProp;
+        let _filter;
 
-        // Parse out unwanted whitespace so the split is accurate
-        var ciccio = docContent.match(/(\S.*)((,)|({))/g);
-        // console.log(ciccio);
-
-        let wordCount = 0;
-        if (docContent != "") {
-            wordCount = docContent.length;
+        while (_filterCache.length > 0) {
+            let _currentFilter = _filterCache.replace(/[^\s{}]+{}/g, "");
+            if (_currentFilter === _filterCache) {
+                _filterCache = ""; 
+                _filter = _currentFilter
+            } else {
+                _filterCache = _currentFilter;
+            }
         }
 
-        return wordCount;
-    }
+        let finalString = _filter.replace(/{/g, " » ") ;
+        //console.log(_removeSpaces);
+        console.log(_filter);
 
-    
+        return finalString;
+    }
 
     dispose() {
         this._statusBarItem.dispose();
