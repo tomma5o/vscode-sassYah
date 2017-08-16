@@ -1,6 +1,4 @@
 
-// https://code.visualstudio.com/docs/extensionAPI/vscode-api
-
 import {window, commands, Range, Position,Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument} from 'vscode';
 
 // This method is called when your extension is activated. Activation is
@@ -21,7 +19,7 @@ class WordCounter {
 
     private _statusBarItem: StatusBarItem;
 
-    public updateWordCount() {
+    public updateNestedRules() {
 
         if (!this._statusBarItem) {
             this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
@@ -63,8 +61,9 @@ class WordCounter {
         let _filterCache = _removeProp;
         let _filter;
 
+        // Remove rules that have closing brackets
         while (_filterCache.length > 0) {
-            let _currentFilter = _filterCache.replace(/[^\s{}]+{}/g, "");
+            let _currentFilter = _filterCache.replace(/([^\s{}]|[\s])+{}/g, "");
             if (_currentFilter === _filterCache) {
                 _filterCache = ""; 
                 _filter = _currentFilter
@@ -74,8 +73,6 @@ class WordCounter {
         }
 
         let finalString = _filter.replace(/{/g, " » ") ;
-        //console.log(_removeSpaces);
-        console.log(_filter);
 
         return finalString;
     }
@@ -99,7 +96,7 @@ class WordCounterController {
         window.onDidChangeActiveTextEditor(this._onEvent, this, subscriptions);
 
         // update the counter for the current file
-        this._wordCounter.updateWordCount();
+        this._wordCounter.updateNestedRules();
 
         // create a combined disposable from both event subscriptions
         this._disposable = Disposable.from(...subscriptions);
@@ -110,6 +107,6 @@ class WordCounterController {
     }
 
     private _onEvent() {
-        this._wordCounter.updateWordCount();
+        this._wordCounter.updateNestedRules();
     }
 }

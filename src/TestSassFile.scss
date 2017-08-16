@@ -1,0 +1,61 @@
+@import "desktop/partials/breadcrumbs";
+
+.ciccio:before {
+    @include arrow($black, bottom, 8px, 1px);
+    transition: transform, $animationTime, $animationType;
+    float: right;
+    position: relative;
+    left: -1px
+}
+
+div,
+span,
+table {
+    position: absolute;
+    width: 10px;
+    height: 100px;
+    right: 0;
+    left: 0;
+
+    li,
+    .classe[data=""] {
+        > .ciccio:after {
+            width: 100px;
+        }
+    }
+    &.ciccio {
+        position: relative;
+        display: block;
+        width: 10px;
+        height: 5px;
+        position: relative;
+
+        & li {
+            height: 10px;
+        }
+    }
+    a {
+        font-size: 10px;
+        text-transform: uppercase;
+
+        span {
+            tab-size: 2;
+        }
+    }
+}
+
+#container {
+	@media #{$mediaQueryLS1680} {
+		width: calc(100% - 60px);
+	}
+
+	@media #{$mediaQueryTill1600} {
+		padding-left: 30px;
+		padding-right: 30px;
+		width: 100%;
+	}
+
+	.item {
+		clear: both;
+	}
+}
