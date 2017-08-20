@@ -5,7 +5,11 @@
     transition: transform, $animationTime, $animationType;
     float: right;
     position: relative;
-    left: -1px
+    left: -1px;
+
+    @media #{$mediaQueryLS1680} {
+		width: calc(100% - 60px);
+	}
 }
 
 div,

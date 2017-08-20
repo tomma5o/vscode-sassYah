@@ -56,9 +56,9 @@ class WordCounter {
         let endPos = new Position(currentLine, 0);
         let docContent = doc.getText(new Range(startPos,endPos));
 
-        let _removeSpaces = docContent.replace(/\s{2,}|\s(?={)|\n/g, "");
-        let _removeProp = _removeSpaces.replace(/\w+-|\w+:{1}\s?\w+;/g, "");
-        let _filterCache = _removeProp;
+        let _removeProp = docContent.match(/([^;]+{)|(})/g).join("");
+        let _removeSpaces = _removeProp.replace(/\s{2,}|\s(?={)|\n/g, "");
+        let _filterCache = _removeSpaces;
         let _filter;
 
         // Remove rules that have closing brackets
