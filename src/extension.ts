@@ -72,7 +72,10 @@ class WordCounter {
             }
         }
 
-        let finalString = _filter.replace(/{/g, " » ") ;
+        
+
+        let re = /([^#](?={))(.)/g;
+        let finalString = _filter.replace(re, "$1  »  ") ;
 
         return finalString;
     }
