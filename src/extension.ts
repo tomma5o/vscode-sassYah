@@ -61,7 +61,7 @@ class WordCounter {
         let _filterCache = _removeSpaces;
         let _filter;
 
-        // Remove rules that have closing brackets
+        // Remove rules that have closing bracketss
         while (_filterCache.length > 0) {
             let _currentFilter = _filterCache.replace(/([^\s{}]|[\s])+{}/g, "");
             if (_currentFilter === _filterCache) {
