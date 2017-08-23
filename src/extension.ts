@@ -48,8 +48,6 @@ class WordCounter {
         }
     }
 
-    
-
     public _getNestedRules(doc: TextDocument, currentLine): string {
 
         let startPos = new Position(0, 0);
@@ -59,23 +57,25 @@ class WordCounter {
         let _removeProp = docContent.match(/([^;]+{)|(})/g).join("");
         let _removeSpaces = _removeProp.replace(/\s{2,}|\s(?={)|\n/g, "");
         let _filterCache = _removeSpaces;
+        let _fixSassPlaceholder = _removeSpaces.replace(/(#{)(.*?)(})/g, "%7B$2%7D");
         let _filter;
 
         // Remove rules that have closing bracketss
-        while (_filterCache.length > 0) {
-            let _currentFilter = _filterCache.replace(/([^\s{}]|[\s])+{}/g, "");
-            if (_currentFilter === _filterCache) {
-                _filterCache = ""; 
+        while (_fixSassPlaceholder.length > 0) {
+            let _currentFilter = _fixSassPlaceholder.replace(/([^\s{}]|[\s])+{}/g, "");
+            if (_currentFilter === _fixSassPlaceholder) {
+                _fixSassPlaceholder = ""; 
                 _filter = _currentFilter
             } else {
-                _filterCache = _currentFilter;
+                _fixSassPlaceholder = _currentFilter;
             }
         }
-
         
+        let _sobstituteBrakets = _filter.replace(/([^#](?={))(.)/g, "$1  »  ") ;
 
-        let re = /([^#](?={))(.)/g;
-        let finalString = _filter.replace(re, "$1  »  ") ;
+        //fix for sass placeholders
+        let _service = _sobstituteBrakets.replace(/%7B/g, "#{");
+        let finalString = _service.replace(/%7D/g, "}")
 
         return finalString;
     }
