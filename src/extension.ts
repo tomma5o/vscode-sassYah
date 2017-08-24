@@ -58,16 +58,19 @@ class WordCounter {
         let _removeSpaces = _removeProp.replace(/\s{2,}|\s(?={)|\n/g, "");
         let _filterCache = _removeSpaces;
         let _fixSassPlaceholder = _removeSpaces.replace(/(#{)(.*?)(})/g, "%7B$2%7D");
+        let _removeComments = _fixSassPlaceholder.replace(/(\/\*.*?\*\/)|\/\*.*/g, "") || _fixSassPlaceholder;
         let _filter;
 
+        console.log(_fixSassPlaceholder ,"\n", _removeComments)
+
         // Remove rules that have closing bracketss
-        while (_fixSassPlaceholder.length > 0) {
-            let _currentFilter = _fixSassPlaceholder.replace(/([^\s{}]|[\s])+{}/g, "");
-            if (_currentFilter === _fixSassPlaceholder) {
-                _fixSassPlaceholder = ""; 
+        while (_removeComments.length > 0) {
+            let _currentFilter = _removeComments.replace(/([^\s{}]|[\s])+{}/g, "");
+            if (_currentFilter === _removeComments) {
+                _removeComments = ""; 
                 _filter = _currentFilter
             } else {
-                _fixSassPlaceholder = _currentFilter;
+                _removeComments = _currentFilter;
             }
         }
         
@@ -75,7 +78,7 @@ class WordCounter {
 
         //fix for sass placeholders
         let _service = _sobstituteBrakets.replace(/%7B/g, "#{");
-        let finalString = _service.replace(/%7D/g, "}")
+        let finalString = _service.replace(/%7D/g, "}");
 
         return finalString;
     }
