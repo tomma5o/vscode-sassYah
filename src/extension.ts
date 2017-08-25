@@ -55,13 +55,14 @@ class WordCounter {
         let docContent = doc.getText(new Range(startPos,endPos));
 
         let _removeProp = docContent.match(/([^;]+{)|(})/g).join("");
-        let _removeSpaces = _removeProp.replace(/\s{2,}|\s(?={)|\n/g, "");
+        let _removeOneLineComments = _removeProp.replace(/\/\/.*/g, "");
+        let _removeSpaces = _removeOneLineComments.replace(/\s{2,}|\s(?={)|\n/g, "");
         let _filterCache = _removeSpaces;
         let _fixSassPlaceholder = _removeSpaces.replace(/(#{)(.*?)(})/g, "%7B$2%7D");
         let _removeComments = _fixSassPlaceholder.replace(/(\/\*.*?\*\/)|\/\*.*/g, "") || _fixSassPlaceholder;
         let _filter;
 
-        console.log(_fixSassPlaceholder ,"\n", _removeComments)
+        console.log(_removeOneLineComments)
 
         // Remove rules that have closing bracketss
         while (_removeComments.length > 0) {
