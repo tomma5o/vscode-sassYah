@@ -62,8 +62,6 @@ class WordCounter {
         let _removeComments = _fixSassPlaceholder.replace(/(\/\*.*?\*\/)|\/\*.*/g, "") || _fixSassPlaceholder;
         let _filter;
 
-        console.log(_removeOneLineComments)
-
         // Remove rules that have closing bracketss
         while (_removeComments.length > 0) {
             let _currentFilter = _removeComments.replace(/([^\s{}]|[\s])+{}/g, "");
