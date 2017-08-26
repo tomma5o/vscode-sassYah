@@ -1,8 +1,8 @@
 {
     "name": "sassyah",
     "displayName": "Sass Yah",
-    "description": "Easily understand where you are",
-    "version": "0.0.2",
+    "description": "Easily understand where you are in SCSS",
+    "version": "0.0.3",
     "publisher": "tomma5o",
     "engines": {
         "vscode": "^1.12.0"
