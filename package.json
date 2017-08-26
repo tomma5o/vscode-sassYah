@@ -3,7 +3,7 @@
     "displayName": "Sass Yah",
     "description": "Easely understand where you are",
     "version": "0.0.1",
-    "publisher": "Tomma5o",
+    "publisher": "tomma5o",
     "engines": {
         "vscode": "^1.12.0"
     },
