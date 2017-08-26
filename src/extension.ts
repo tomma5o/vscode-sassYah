@@ -73,11 +73,13 @@ class WordCounter {
             }
         }
         
-        let _sobstituteBrakets = _filter.replace(/([^#](?={))(.)/g, "$1  »  ") ;
-
-        //fix for sass placeholders
-        let _service = _sobstituteBrakets.replace(/%7B/g, "#{");
-        let finalString = _service.replace(/%7D/g, "}");
+        if (_filter && _filter.length > 1 ) {
+            let _sobstituteBrakets = _filter.replace(/([^#](?={))(.)/g, "$1  »  ") ;
+            let _service = _sobstituteBrakets.replace(/%7B/g, "#{");
+            var finalString:string = _service.replace(/%7D/g, "}");
+        } else {
+            var finalString = "";
+        }
 
         return finalString;
     }
