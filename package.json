@@ -2,7 +2,7 @@
     "name": "sassyah",
     "displayName": "Sass Yah",
     "description": "Easily understand where you are",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "tomma5o",
     "engines": {
         "vscode": "^1.12.0"
