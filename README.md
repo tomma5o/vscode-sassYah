@@ -2,7 +2,7 @@
 
 This simple extesion is to make SCSS more legible in very large SCSS file
 
-![Screen Shot](./src/img/Screenshot_sassyah.png "Screenshot SassYah")
+<img src="https://tommasopoletti.com/images/Screenshot_sassyah.png" alt="sassyah" style="width: 200px;"/>
 
 ---------------------------
 
