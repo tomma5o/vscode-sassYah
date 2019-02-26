@@ -2,7 +2,7 @@
 
 This simple extension make SCSS more legible in very large file
 
-<img src="https://tommasopoletti.com/images/Screenshot_sassyah.png" alt="sassyah" style="width: 200px;"/>
+<img src="https://raw.githubusercontent.com/tomma5o/vscode-sassYah/master/src/img/Screenshot_sassyah.png" alt="sassyah" style="width: 200px;"/>
 
 ---------------------------
 
