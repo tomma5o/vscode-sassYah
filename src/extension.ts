@@ -1,10 +1,19 @@
 
-import {window, commands, Range, Position,Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument} from 'vscode';
+import {
+    window,
+    commands,
+    Range,
+    Position,
+    Disposable,
+    ExtensionContext,
+    StatusBarAlignment,
+    StatusBarItem,
+    TextDocument
+} from 'vscode';
 
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
 export function activate(context: ExtensionContext) {
-
     // create a new word counter
     let wordCounter = new WordCounter();
     let controller = new WordCounterController(wordCounter);
@@ -20,27 +29,24 @@ class WordCounter {
     private _statusBarItem: StatusBarItem;
 
     public updateNestedRules() {
-
         if (!this._statusBarItem) {
             this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
         }
-
+        
         let editor = window.activeTextEditor;
+        let doc = editor.document;
+        let currentLine = editor.selections[0].active.line;
+
         if (!editor) {
             this._statusBarItem.hide();
             return;
         }
 
-        let doc = editor.document;
-        let currentLine = editor.selections[0].active.line;
-
-        // Only update status if an Sass file
         if (doc.languageId === "scss") {
-            let wordCount = this._getNestedRules(doc, currentLine);
+            const wordCount = this.getNestedRules(doc, currentLine);
 
             // Update the status bar
             this._statusBarItem.text = `${wordCount}`;
-            // this._statusBarItem.color = "#fff";
             this._statusBarItem.command = "";
             this._statusBarItem.show();
         } else { 
@@ -48,33 +54,45 @@ class WordCounter {
         }
     }
 
-    public _getNestedRules(doc: TextDocument, currentLine): string {
+    private retriveCleanedText(docTxt:string): string {
+        if(!docTxt) return;
+        return docTxt
+            .match(/([^;]+{)|(})/g).join("") // remove properties
+            .replace(/\/\/.*/g, "") // remove inline comments
+            .replace(/\s{2,}|\s(?={)|\n/g, "") // trim spaces
+            .replace(/(#{)(.*?)(})/g, "%7B$2%7D") // fix sass placeholder aka '#{}'
+            .replace(/(\/\*.*?\*\/)|\/\*.*/g, "") // remove multiline comments
+    }
 
-        let startPos = new Position(0, 0);
-        let endPos = new Position(currentLine, 0);
-        let docContent = doc.getText(new Range(startPos,endPos));
+    /**
+     * @description Remove open/closing brackets of the definitive path
+     * @param docTxt Document text before the cursor
+     */
+    private retriveCurrentPath(cleanedText:string): string {
+        let currentPath:string = cleanedText;
 
-        let _removeProp = docContent.match(/([^;]+{)|(})/g).join("");
-        let _removeOneLineComments = _removeProp.replace(/\/\/.*/g, "");
-        let _removeSpaces = _removeOneLineComments.replace(/\s{2,}|\s(?={)|\n/g, "");
-        let _filterCache = _removeSpaces;
-        let _fixSassPlaceholder = _removeSpaces.replace(/(#{)(.*?)(})/g, "%7B$2%7D");
-        let _removeComments = _fixSassPlaceholder.replace(/(\/\*.*?\*\/)|\/\*.*/g, "") || _fixSassPlaceholder;
-        let _filter;
-
-        // Remove rules that have closing bracketss
-        while (_removeComments.length > 0) {
-            let _currentFilter = _removeComments.replace(/([^\s{}]|[\s])+{}/g, "");
-            if (_currentFilter === _removeComments) {
-                _removeComments = ""; 
-                _filter = _currentFilter
+        while (currentPath.length > 0) {
+            let currentFilter = currentPath.replace(/([^\s{}]|[\s])+{}/g, "");
+            if (currentFilter === currentPath) {
+                return currentFilter;
             } else {
-                _removeComments = _currentFilter;
+                currentPath = currentFilter;
             }
         }
+    }
+
+    private getNestedRules(doc: TextDocument, currentLine): string {
+
+        const startPos = new Position(0, 0);
+        const endPos = new Position(currentLine, 0);
+        const docContent = doc.getText(new Range(startPos,endPos));
         
-        if (_filter && _filter.length > 1 ) {
-            let _sobstituteBrakets = _filter.replace(/([^#](?={))(.)/g, "$1  »  ") ;
+        const cleanedText:string = this.retriveCleanedText(docContent);
+        const cleanedPath:string = this.retriveCurrentPath(cleanedText);
+        
+        
+        if (cleanedPath && cleanedPath.length > 1 ) {
+            let _sobstituteBrakets = cleanedPath.replace(/([^#](?={))(.)/g, "$1  »  ") ;
             let _service = _sobstituteBrakets.replace(/%7B/g, "#{");
             var finalString:string = _service.replace(/%7D/g, "}");
         } else {
