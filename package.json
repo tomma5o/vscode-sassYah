@@ -2,7 +2,7 @@
     "name": "sassyah",
     "displayName": "Sass Yah",
     "description": "Easily understand where you are in SCSS",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "publisher": "tomma5o",
     "repository": "https://github.com/tomma5o/vscode-sassyah",
     "engines": {
